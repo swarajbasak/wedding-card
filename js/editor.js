@@ -10,17 +10,21 @@
     const saved = JSON.parse(localStorage.getItem(KEY) || "null");
     if (saved) state = saved;
   } catch (e) {}
+  state.colors = state.colors || {};
   state.gallery = state.gallery || [];
   state.photo = state.photo || "";
   const t = new URLSearchParams(location.search).get("t");
   if (t && TEMPLATES[t]) state.template = t;
 
-  // theme picker
-  Object.entries(TEMPLATES).forEach(([k, v]) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.textContent = v.name; b.dataset.k = k;
-    b.onclick = () => { state.template = k; sync(); };
-    themesBox.appendChild(b);
+  // theme picker, grouped by tag
+  TEMPLATE_TAGS.forEach((tag) => {
+    const h = document.createElement("div"); h.className = "tpl-group"; h.textContent = tag; themesBox.appendChild(h);
+    Object.entries(TEMPLATES).filter(([, v]) => v.tag === tag).forEach(([k, v]) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = v.name.replace(/ \(Bengali\)/, ""); b.dataset.k = k;
+      b.onclick = () => { state.template = k; state.colors = {}; renderColors(); sync(); };
+      themesBox.appendChild(b);
+    });
   });
 
   // simple fields
@@ -50,6 +54,30 @@
   document.getElementById("addEv").onclick = () => {
     state.events.push({ name: "", time: "", place: "" }); renderEvents(); update();
   };
+
+  // ---- colors ----
+  const COLOR_FIELDS = [["bg1", "Background"], ["bg2", "Background 2 (gradient)"], ["accent", "Accent / headings"], ["text", "Text"]];
+  const PRESETS = [["#fff5f0", "#f9d5dc"], ["#fdf8ee", "#efe2c3"], ["#e9f5ee", "#bfdcc9"], ["#e8f0ff", "#c4d4f5"], ["#3b0d1f", "#12040a"], ["#0b1d3a", "#050a18"], ["#12372a", "#06130e"], ["#2b1b45", "#0e0818"]];
+  function renderColors() {
+    const box = document.getElementById("colors"); box.innerHTML = "";
+    COLOR_FIELDS.forEach(([k, label]) => {
+      const row = document.createElement("div"); row.className = "crow" + (state.colors[k] ? "" : " unset");
+      const l = document.createElement("label"); l.textContent = label;
+      const inp = document.createElement("input"); inp.type = "color"; inp.value = state.colors[k] || "#ffffff";
+      inp.oninput = () => { state.colors[k] = inp.value; row.classList.remove("unset"); update(); };
+      const x = document.createElement("button"); x.type = "button"; x.className = "x"; x.title = "Use template color"; x.textContent = "×";
+      x.onclick = () => { delete state.colors[k]; renderColors(); update(); };
+      row.append(l, inp, x); box.appendChild(row);
+    });
+  }
+  const sw = document.getElementById("swatches");
+  PRESETS.forEach(([a, b]) => {
+    const btn = document.createElement("button"); btn.type = "button"; btn.title = a + " → " + b;
+    btn.style.background = `linear-gradient(135deg, ${a}, ${b})`;
+    btn.onclick = () => { state.colors.bg1 = a; state.colors.bg2 = b; delete state.colors.text; renderColors(); update(); };
+    sw.appendChild(btn);
+  });
+  document.getElementById("resetColors").onclick = () => { state.colors = {}; renderColors(); update(); };
 
   // ---- photos ----
   const MAX_GALLERY = 8;
@@ -134,7 +162,23 @@
   function cardUrl(q) {
     return new URL("card.html", location.href).href + "#d=" + q;
   }
+  function applySample() {
+    const tpl = TEMPLATES[state.template];
+    document.getElementById("bnEvents").hidden = !(tpl && tpl.sampleEvents);
+  }
+  document.getElementById("bnEvents").onclick = () => {
+    const tpl = TEMPLATES[state.template]; if (!tpl || !tpl.sampleEvents) return;
+    const base = new Date((state.date || "2027-02-14T18:30"));
+    state.events = tpl.sampleEvents.map((e) => {
+      const d = new Date(base); d.setDate(d.getDate() + e.day);
+      const pad = (n) => String(n).padStart(2, "0");
+      const t = e.time || `${pad(base.getHours())}:${pad(base.getMinutes())}`;
+      return { name: e.name, place: e.place, time: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${t}` };
+    });
+    renderEvents(); update();
+  };
   function sync() {
+    applySample();
     themesBox.querySelectorAll("button").forEach((b) => b.classList.toggle("sel", b.dataset.k === state.template));
     update();
   }
@@ -156,7 +200,7 @@
     try {
       const [css, tpl, js] = await Promise.all(["css/card.css", "js/templates.js", "js/card.js"].map((u) => fetch(u).then((r) => r.text())));
       const json = JSON.stringify(state).replace(/</g, "\\u003c");
-      const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${(state.bride || "").replace(/[<&]/g, "")} &amp; ${(state.groom || "").replace(/[<&]/g, "")}</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Jost:wght@300;400&display=swap" rel="stylesheet"><style>${css}</style></head><body><div id="app"></div><script>window.__CARD__=${json};<\/script><script>${tpl}<\/script><script>${js}<\/script><script>CardApp.mount(document.getElementById("app"));<\/script></body></html>`;
+      const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${(state.bride || "").replace(/[<&]/g, "")} &amp; ${(state.groom || "").replace(/[<&]/g, "")}</title><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Jost:wght@300;400&family=Noto+Serif+Bengali:wght@400;600&family=Dancing+Script:wght@500&family=Noto+Naskh+Arabic:wght@500&family=Noto+Serif+Tamil:wght@500&family=Noto+Sans+Gurmukhi:wght@500&family=Noto+Serif+Devanagari:wght@500&display=swap" rel="stylesheet"><style>${css}</style></head><body><div id="app"></div><script>window.__CARD__=${json};<\/script><script>${tpl}<\/script><script>${js}<\/script><script>CardApp.mount(document.getElementById("app"));<\/script></body></html>`;
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
       a.download = `${(state.bride || "wedding").toLowerCase()}-${(state.groom || "card").toLowerCase()}.html`.replace(/[^a-z0-9.-]/g, "");
@@ -164,5 +208,5 @@
     } catch (e) { flash("Download needs the site served over http (python3 -m http.server)"); }
   };
 
-  renderEvents(); renderPhotos(); sync();
+  renderEvents(); renderPhotos(); renderColors(); sync();
 })();

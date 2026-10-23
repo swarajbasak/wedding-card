@@ -12,6 +12,10 @@
   <div class="editor">
     <form class="panel" id="form" onsubmit="return false">
       <h2>Template</h2><div class="themes" id="themes"></div>
+      <h2>Colors</h2>
+      <div class="swatches" id="swatches"></div>
+      <div id="colors"></div>
+      <button type="button" class="btn-s" id="resetColors">Reset to template colors</button>
       <h2>Couple</h2>
       <div class="row"><div><label>Bride</label><input name="bride"></div><div><label>Groom</label><input name="groom"></div></div>
       <label>Invitation message</label><textarea name="message"></textarea>
@@ -22,6 +26,7 @@
       <label>Google Maps link</label><input name="mapUrl" placeholder="https://maps.google.com/...">
       <h2>Celebrations</h2><div id="events"></div>
       <button type="button" class="btn-s" id="addEv">+ Add event</button>
+      <button type="button" class="btn-s" id="bnEvents" hidden>Use Bengali ritual events</button>
       <h2>Photos</h2>
       <label>Cover photo (shown on the first screen)</label>
       <input type="file" accept="image/*" id="coverFile">

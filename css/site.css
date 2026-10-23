@@ -46,3 +46,17 @@ textarea { min-height: 80px; resize: vertical; }
 .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .thumbs .t button { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; border: 0; background: rgba(0,0,0,.65); color: #fff; cursor: pointer; line-height: 1; }
 .themes { grid-template-columns: repeat(2, 1fr); }
+[hidden] { display: none !important; }
+
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.swatches button { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; }
+.crow { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: .85rem; }
+.crow label { margin: 0; flex: 1; }
+.crow input[type=color] { width: 44px; height: 34px; padding: 2px; border-radius: 8px; cursor: pointer; }
+.crow.unset input[type=color] { opacity: .35; }
+.crow .x { background: none; border: 0; cursor: pointer; color: var(--muted); font-size: 1.1rem; width: 24px; }
+
+.chips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; padding: 0 5vw; }
+.chip { border: 1px solid var(--line); background: #fff; padding: 8px 18px; border-radius: 30px; font: inherit; cursor: pointer; }
+.chip.sel { background: var(--brand); border-color: var(--brand); color: #fff; }
+.tpl-group { grid-column: 1/-1; font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: var(--brand); margin: 10px 0 -2px; }

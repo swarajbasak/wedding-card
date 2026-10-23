@@ -14,12 +14,22 @@
     <p>Pick a template, fill in your details, and share a beautiful animated wedding card with a single link.</p>
     <a class="btn-p" href="create.html">Start creating — it's free</a>
   </section>
+  <div class="chips" id="chips"></div>
   <section class="gallery" id="gallery"></section>
   <script src="js/templates.js"></script>
   <script>
     const g = document.getElementById("gallery");
+    const chips = document.getElementById("chips");
+    ["All"].concat(TEMPLATE_TAGS).forEach((tag, i) => {
+      const b = document.createElement("button"); b.textContent = tag; b.className = "chip" + (i ? "" : " sel");
+      b.onclick = () => {
+        chips.querySelectorAll(".chip").forEach((c) => c.classList.toggle("sel", c === b));
+        g.querySelectorAll(".tpl").forEach((c) => (c.hidden = tag !== "All" && c.dataset.tag !== tag));
+      };
+      chips.appendChild(b);
+    });
     Object.entries(TEMPLATES).forEach(([key, t]) => {
-      const a = document.createElement("a");
+      const a = document.createElement("a"); a.dataset.tag = t.tag;
       a.className = "tpl"; a.href = "create.html?t=" + key;
       const f = document.createElement("div"); f.className = "frame";
       const ifr = document.createElement("iframe"); ifr.loading = "lazy"; ifr.tabIndex = -1;
