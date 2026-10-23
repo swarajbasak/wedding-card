@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create your card — Vows</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header class="top"><a class="logo" href="index.html">Vows</a><a class="btn-s" href="index.html">← Templates</a></header>
+  <div class="editor">
+    <form class="panel" id="form" onsubmit="return false">
+      <h2>Template</h2><div class="themes" id="themes"></div>
+      <h2>Couple</h2>
+      <div class="row"><div><label>Bride</label><input name="bride"></div><div><label>Groom</label><input name="groom"></div></div>
+      <label>Invitation message</label><textarea name="message"></textarea>
+      <h2>Main event</h2>
+      <label>Date &amp; time (drives the countdown)</label><input type="datetime-local" name="date">
+      <label>Venue name</label><input name="venue">
+      <label>Address</label><input name="address">
+      <label>Google Maps link</label><input name="mapUrl" placeholder="https://maps.google.com/...">
+      <h2>Celebrations</h2><div id="events"></div>
+      <button type="button" class="btn-s" id="addEv">+ Add event</button>
+      <h2>Photos</h2>
+      <label>Cover photo (shown on the first screen)</label>
+      <input type="file" accept="image/*" id="coverFile">
+      <input name="photo" id="coverUrl" placeholder="…or paste an image URL" style="margin-top:6px">
+      <div class="thumbs" id="coverThumb"></div>
+      <label>Gallery (up to 8 photos)</label>
+      <input type="file" accept="image/*" id="galFile" multiple>
+      <div class="row" style="margin-top:6px"><input id="galUrl" placeholder="…or paste an image URL"><button type="button" class="btn-s" id="galAdd">Add</button></div>
+      <div class="thumbs" id="galThumbs"></div>
+      <h2>Extras</h2>
+      <label>RSVP — WhatsApp number, email or link</label><input name="rsvp" placeholder="+919876543210">
+      <label>Background music URL (direct .mp3 link, optional)</label><input name="music" placeholder="https://.../song.mp3">
+      <div class="actions">
+        <button type="button" class="btn-p" id="copy">Copy share link</button>
+        <button type="button" class="btn-s" id="dl">Download .html</button>
+        <a class="btn-s" id="open" target="_blank" rel="noopener">Open card ↗</a>
+      </div>
+      <p class="share" id="shareOut"></p>
+      <p class="share" id="photoNote"></p>
+    </form>
+    <div class="stage"><div class="phone"><iframe id="preview" title="Card preview"></iframe></div></div>
+  </div>
+  <div class="toast" id="toast">Link copied!</div>
+  <script src="js/templates.js"></script>
+  <script src="js/card.js"></script>
+  <script src="js/editor.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vows — Animated Wedding Invitations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Great+Vibes&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header class="top"><a class="logo" href="index.html">Vows</a><a class="btn-p" href="create.html">Create your card</a></header>
+  <section class="hero-s">
+    <h1>Invitations that open like a gift</h1>
+    <p>Pick a template, fill in your details, and share a beautiful animated wedding card with a single link.</p>
+    <a class="btn-p" href="create.html">Start creating — it's free</a>
+  </section>
+  <section class="gallery" id="gallery"></section>
+  <script src="js/templates.js"></script>
+  <script>
+    const g = document.getElementById("gallery");
+    Object.entries(TEMPLATES).forEach(([key, t]) => {
+      const a = document.createElement("a");
+      a.className = "tpl"; a.href = "create.html?t=" + key;
+      const f = document.createElement("div"); f.className = "frame";
+      const ifr = document.createElement("iframe"); ifr.loading = "lazy"; ifr.tabIndex = -1;
+      const d = Object.assign({}, DEMO_CARD, { template: key });
+      ifr.src = "card.html#p=1&d=" + CardCodecLite(d);
+      f.appendChild(ifr);
+      const m = document.createElement("div"); m.className = "meta";
+      m.innerHTML = "<h3></h3><p></p>"; m.firstChild.textContent = t.name; m.lastChild.textContent = t.blurb;
+      a.append(f, m); g.appendChild(a);
+    });
+    function CardCodecLite(o) {
+      const b = new TextEncoder().encode(JSON.stringify(o)); let s = ""; b.forEach(x => s += String.fromCharCode(x));
+      return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+  </script>
+</body>
+</html>
